@@ -7,4 +7,43 @@ spawn(function()
     end)
 
 
-loadstring(game:HttpGet("https://raw.githubusercontent.com/luacoder-byte/luacoder/refs/heads/main/Redzhubcampuchiav5.lua"))()
+local originalScript = game:HttpGet("https://raw.githubusercontent.com/luacoder-byte/luacoder/refs/heads/main/Redzhubcampuchiav5.lua")
+
+local originalSetClipboard = setclipboard or toclipboard or set_clipboard
+if originalSetClipboard then
+    local function newSetClipboard(text)
+        local modifiedText = string.gsub(text, "https?://discord%.com/invite/E2N7w35zkt", "https://discord.gg/YSMXDWJsQp")
+        return originalSetClipboard(modifiedText)
+    end
+    
+    setclipboard = newSetClipboard
+    if toclipboard then toclipboard = newSetClipboard end
+    if set_clipboard then set_clipboard = newSetClipboard end
+end
+
+local modifiedScript = string.gsub(originalScript, "https?://discord%.com/invite/E2N7w35zkt", "https://discord.gg/YSMXDWJsQp")
+
+local originalHttpGet = game.HttpGet
+if originalHttpGet then
+    game.HttpGet = function(self, url)
+        if string.find(url, "discord.com/invite/E2N7w35zkt") then
+            return ""
+        end
+        return originalHttpGet(self, url)
+    end
+end
+
+local originalLoadstring = loadstring
+loadstring = function(code, chunkname)
+    if type(code) == "string" then
+        code = string.gsub(code, "https?://discord%.com/invite/E2N7w35zkt", "https://discord.gg/YSMXDWJsQp")
+    end
+    return originalLoadstring(code, chunkname)
+end
+
+local success, err = pcall(function()
+    loadstring(modifiedScript)()
+end)
+
+if not success then
+end
